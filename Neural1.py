@@ -72,9 +72,9 @@ train = get_one_list(circles, triangle)
 # ]
 
 #сколько раз прогоним кейсы
-epochs = 4000
+epochs = 5000
 #насколько быстро за каждую иттерацию нужно сдвигаться
-learning_rate = 0.05
+learning_rate = 0.04
 
 network = Neural(learning_rate=learning_rate)
 
@@ -90,3 +90,13 @@ for i in range(epochs): # i = 0...3999
 
     train_loss = MSE(network.predict(np.array(inputs_).T), np.array(correct_predictions))
     sys.stdout.write("\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5]))
+
+for inputs_stat, correct_predict in train:
+    print("the prediction: {}, expected: {}".format(
+        str(network.predict(np.array(inputs_stat)) > 0.5),
+        str(correct_predict == 1)))
+
+for inputs_stat, correct_predict in train:
+    print("the prediction: {}, expected: {}".format(
+        str(network.predict(np.array(inputs_stat))),
+        str(correct_predict == 1)))
