@@ -7,6 +7,7 @@
 поиск по всему проекту ctrl+shift+f
 выделить несколько строк shift + up
 
+add commit:
 github
 1. git add --all
 2. git commit -m 'commit name'
