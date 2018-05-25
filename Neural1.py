@@ -5,7 +5,7 @@ from read_all_images import read_images
 
 class Neural:
     def __init__(self, learning_rate = 0.1):    #конструктор, learning_rate - скорость обучения стоит по умолчанию, но его можно менять
-        self.weights_0_1 = np.random.normal(0.0, 2 ** -0.5, (2, 3)) #задаем рандомные значения от 0 уровня к 1. На входе 10 нейронов, идут к 2
+        self.weights_0_1 = np.random.normal(0.0, 2 ** -0.5, (2, 576)) #задаем рандомные значения от 0 уровня к 1. На входе 10 нейронов, идут к 2
         self.weights_1_2 = np.random.normal(0.0, 1, (1, 2))
         self.sigmoid_mapper = np.vectorize(self.sigmoid)# позволяет пробежаться по вектору, к каждому элементу применить сигмоидную функцию и оставить результат
         self.learning_rate = np.array([learning_rate]) #список передали в метод, который сделает массив из списка
@@ -46,23 +46,35 @@ def MSE(pred, real):
     return np.mean((pred - real) ** 2)
 
 
-# read_images("circle", 1)
-# read_images("triangle", 0)
-train = [
-    ([0, 0, 0], 0),
-    ([0, 0, 1], 1),
-    ([0, 1, 0], 0),
-    ([0, 1, 1], 0),
-    ([1, 0, 0], 1),
-    ([1, 0, 1], 1),
-    ([1, 1, 0], 0),
-    ([1, 1, 1], 1)
-]
+def get_one_list(first: [], second: []) -> []:
+    result_list = list() #[]
+    for q in range(0, len(first)):
+        result_list.append(first[q])
+        result_list.append(second[q])
+    # for w in range(0, len(second)):
+    #     result_list.append(second[w])
+    return result_list
+
+
+circles = read_images("circle", 1)
+triangle = read_images("triangle", 0)
+train = get_one_list(circles, triangle)
+
+# train = [
+#     ([0, 0, 0], 0),
+#     ([0, 0, 1], 1),
+#     ([0, 1, 0], 0),
+#     ([0, 1, 1], 0),
+#     ([1, 0, 0], 1),
+#     ([1, 0, 1], 1),
+#     ([1, 1, 0], 0),
+#     ([1, 1, 1], 1)
+# ]
 
 #сколько раз прогоним кейсы
 epochs = 4000
 #насколько быстро за каждую иттерацию нужно сдвигаться
-learning_rate = 0.007
+learning_rate = 0.05
 
 network = Neural(learning_rate=learning_rate)
 
