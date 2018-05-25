@@ -1,5 +1,6 @@
 import numpy as np # для работы с матрицами
 import sys # для печати на экран
+from read_all_images import read_images
 
 
 class Neural:
@@ -45,6 +46,8 @@ def MSE(pred, real):
     return np.mean((pred - real) ** 2)
 
 
+# read_images("circle", 1)
+# read_images("triangle", 0)
 train = [
     ([0, 0, 0], 0),
     ([0, 0, 1], 1),

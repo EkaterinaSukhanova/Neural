@@ -15,6 +15,6 @@ def read_images(shape_name: str, predict_val: int) -> []:
     return all_images
 
 
-read_images("circle", 1)
-
-print(1)
+if __name__ == "__main__":
+    read_images("circle", 1)
+    read_images("triangle", 0)
