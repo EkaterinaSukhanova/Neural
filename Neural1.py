@@ -56,47 +56,100 @@ def get_one_list(first: [], second: []) -> []:
     for q in range(0, len(first)):
         result_list.append(first[q])
         result_list.append(second[q])
-    # for w in range(0, len(second)):
-    #     result_list.append(second[w])
     return result_list
 
 
-circles = read_images("circle", 1)
-triangle = read_images("triangle", 0)
-train = get_one_list(circles, triangle)
+#тестируем
+def detect_object(network: Neural, filename: str):
+    input_image = read_one_image(filename)
+    answer = network.predict(input_image)
 
-#сколько раз прогоним кейсы
-epochs = 5000
-#насколько быстро за каждую иттерацию нужно сдвигаться
-learning_rate = 0.04
+    if answer >= 0.5:
+        result_str = "Круг"
+        return result_str
+    else:
+        result_str = "Треугольник"
+        return result_str
 
-arrays_weights_0_1 = []
-with open('weights_0_1.txt', 'r') as f:
-    arr = []
-    for line in f:
-        if line == ';\n':
+
+def training(network: Neural, train: [], epochs: int):
+    for i in range(epochs):  # i = 0...3999
+        inputs_ = []
+        correct_predictions = []
+        # проходим по всем значениям
+        for inputs_stat, correct_predict in train:
+            network.train(np.array(inputs_stat), correct_predict)  # передаем входные данные и ожидаемые
+            # сохраняем результаты для подсчета MSE
+            inputs_.append(np.array(inputs_stat))
+            correct_predictions.append(np.array(correct_predict))
+
+        train_loss = MSE(network.predict(np.array(inputs_).T), np.array(correct_predictions))
+        sys.stdout.write(
+            "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5]))
+
+
+def read_weight():
+    arrays_weights_0_1 = []
+    with open('weights_0_1.txt', 'r') as f:
+        arr = []
+        for line in f:
+            if line == ';\n':
+                arrays_weights_0_1.append(arr)
+                arr = []
+            else:
+                arr.append(float(line))
+        if len(arr) > 0:
             arrays_weights_0_1.append(arr)
-            arr = []
-        else:
-            arr.append(float(line))
-    if len(arr) > 0:
-        arrays_weights_0_1.append(arr)
-arrays_weights_0_1 = np.array(arrays_weights_0_1)
+    arrays_weights_0_1 = np.array(arrays_weights_0_1)
 
-arrays_weights_1_2 = []
-with open('weights_1_2.txt', 'r') as f:
-    arr = []
-    for line in f:
-        if line == ';\n':
+    arrays_weights_1_2 = []
+    with open('weights_1_2.txt', 'r') as f:
+        arr = []
+        for line in f:
+            if line == ';\n':
+                arrays_weights_1_2.append(arr)
+                arr = []
+            else:
+                arr.append(float(line))
+        if len(arr) > 0:
             arrays_weights_1_2.append(arr)
-            arr = []
-        else:
-            arr.append(float(line))
-    if len(arr) > 0:
-        arrays_weights_1_2.append(arr)
-arrays_weights_1_2 = np.array(arrays_weights_1_2)
+    arrays_weights_1_2 = np.array(arrays_weights_1_2)
+    return arrays_weights_0_1, arrays_weights_1_2
 
-network = Neural(learning_rate=learning_rate, arrays_weights_0_1=arrays_weights_0_1, arrays_weights_1_2=arrays_weights_1_2)
+
+def result_in_number(network: Neural, train: []):
+    for inputs_stat, correct_predict in train:
+        print("the prediction: {}, expected: {}".format(
+            str(network.predict(np.array(inputs_stat)) > 0.5),
+            str(correct_predict == 1)))
+
+    for inputs_stat, correct_predict in train:
+        print("the prediction: {}, expected: {}".format(
+            str(network.predict(np.array(inputs_stat))),
+            str(correct_predict == 1)))
+
+
+def start(filename: str):
+    circles = read_images("circle", 1)
+    triangle = read_images("triangle", 0)
+    train = get_one_list(circles, triangle)
+
+    arrays_weights_0_1, arrays_weights_1_2 = read_weight()
+
+    # сколько раз прогоним кейсы
+    epochs = 5000
+    # насколько быстро за каждую иттерацию нужно сдвигаться
+    learning_rate = 0.04
+
+    network = Neural(learning_rate=learning_rate, arrays_weights_0_1=arrays_weights_0_1, arrays_weights_1_2=arrays_weights_1_2)
+    training(network=network, train=train, epochs=epochs)
+    return detect_object(network, filename)
+
+
+if __name__ == "__main__":
+    result = start("triangle10")
+    print(result)
+
 
 #запись весов в файл
 # with open('weights_0_1.txt', 'w') as f:
@@ -111,19 +164,6 @@ network = Neural(learning_rate=learning_rate, arrays_weights_0_1=arrays_weights_
 #             f.write(str(item) + "\n")
 #         f.write(";" + "\n")
 
-for i in range(epochs): # i = 0...3999
-    inputs_ = []
-    correct_predictions = []
-    #проходим по всем значениям
-    for inputs_stat, correct_predict in train:
-        network.train(np.array(inputs_stat), correct_predict) #передаем входные данные и ожидаемые
-        #сохраняем результаты для подсчета MSE
-        inputs_.append(np.array(inputs_stat))
-        correct_predictions.append(np.array(correct_predict))
-
-    train_loss = MSE(network.predict(np.array(inputs_).T), np.array(correct_predictions))
-    sys.stdout.write("\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5]))
-
 #результаты в числах
 # for inputs_stat, correct_predict in train:
 #     print("the prediction: {}, expected: {}".format(
@@ -134,12 +174,3 @@ for i in range(epochs): # i = 0...3999
 #     print("the prediction: {}, expected: {}".format(
 #         str(network.predict(np.array(inputs_stat))),
 #         str(correct_predict == 1)))
-
-#тестируем
-test = read_one_image("triangle10")
-answer = network.predict(test)
-
-if answer >= 0.5:
-    print("Круг")
-else:
-    print("Треугольник")
