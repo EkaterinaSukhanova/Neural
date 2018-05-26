@@ -5,9 +5,13 @@ from read_image import read_one_image
 
 
 class Neural:
-    def __init__(self, learning_rate = 0.1, arrays = np.random.normal(0.0, 2 ** -0.5, (2, 576))):    #конструктор, learning_rate - скорость обучения стоит по умолчанию, но его можно менять
-        self.weights_0_1 = arrays #np.random.normal(0.0, 2 ** -0.5, (2, 576)) #задаем рандомные значения от 0 уровня к 1. На входе 10 нейронов, идут к 2
-        self.weights_1_2 = np.random.normal(0.0, 1, (1, 2))
+    def __init__(self, learning_rate=0.1, arrays_weights_0_1=None, arrays_weights_1_2=None):
+        if arrays_weights_0_1 is None:
+            arrays_weights_0_1 = np.random.normal(0.0, 2 ** -0.5, (2, 576))
+        if arrays_weights_1_2 is None:
+            arrays_weights_1_2 = np.random.normal(0.0, 1, (1, 2))
+        self.weights_0_1 = arrays_weights_0_1
+        self.weights_1_2 = arrays_weights_1_2
         self.sigmoid_mapper = np.vectorize(self.sigmoid)# позволяет пробежаться по вектору, к каждому элементу применить сигмоидную функцию и оставить результат
         self.learning_rate = np.array([learning_rate]) #список передали в метод, который сделает массив из списка
 
@@ -61,39 +65,48 @@ circles = read_images("circle", 1)
 triangle = read_images("triangle", 0)
 train = get_one_list(circles, triangle)
 
-# train = [
-#     ([0, 0, 0], 0),
-#     ([0, 0, 1], 1),
-#     ([0, 1, 0], 0),
-#     ([0, 1, 1], 0),
-#     ([1, 0, 0], 1),
-#     ([1, 0, 1], 1),
-#     ([1, 1, 0], 0),
-#     ([1, 1, 1], 1)
-# ]
-
 #сколько раз прогоним кейсы
 epochs = 5000
 #насколько быстро за каждую иттерацию нужно сдвигаться
 learning_rate = 0.04
 
-arrays = []
-with open('weights.txt', 'r') as f:
+arrays_weights_0_1 = []
+with open('weights_0_1.txt', 'r') as f:
     arr = []
     for line in f:
         if line == ';\n':
-            arrays.append(arr)
-            arr.clear()
+            arrays_weights_0_1.append(arr)
+            arr = []
         else:
             arr.append(float(line))
     if len(arr) > 0:
-        arrays.append(arr)
+        arrays_weights_0_1.append(arr)
+arrays_weights_0_1 = np.array(arrays_weights_0_1)
 
-network = Neural(learning_rate=learning_rate, arrays=arrays)
+arrays_weights_1_2 = []
+with open('weights_1_2.txt', 'r') as f:
+    arr = []
+    for line in f:
+        if line == ';\n':
+            arrays_weights_1_2.append(arr)
+            arr = []
+        else:
+            arr.append(float(line))
+    if len(arr) > 0:
+        arrays_weights_1_2.append(arr)
+arrays_weights_1_2 = np.array(arrays_weights_1_2)
+
+network = Neural(learning_rate=learning_rate, arrays_weights_0_1=arrays_weights_0_1, arrays_weights_1_2=arrays_weights_1_2)
 
 #запись весов в файл
-# with open('weights.txt', 'w') as f:
+# with open('weights_0_1.txt', 'w') as f:
 #     for arr in network.weights_0_1:
+#         for item in arr:
+#             f.write(str(item) + "\n")
+#         f.write(";" + "\n")
+#
+# with open('weights_1_2.txt', 'w') as f:
+#     for arr in network.weights_1_2:
 #         for item in arr:
 #             f.write(str(item) + "\n")
 #         f.write(";" + "\n")
@@ -111,6 +124,7 @@ for i in range(epochs): # i = 0...3999
     train_loss = MSE(network.predict(np.array(inputs_).T), np.array(correct_predictions))
     sys.stdout.write("\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5]))
 
+#результаты в числах
 # for inputs_stat, correct_predict in train:
 #     print("the prediction: {}, expected: {}".format(
 #         str(network.predict(np.array(inputs_stat)) > 0.5),
