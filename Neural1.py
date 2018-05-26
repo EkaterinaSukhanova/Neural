@@ -5,8 +5,8 @@ from read_image import read_one_image
 
 
 class Neural:
-    def __init__(self, learning_rate = 0.1):    #конструктор, learning_rate - скорость обучения стоит по умолчанию, но его можно менять
-        self.weights_0_1 = np.random.normal(0.0, 2 ** -0.5, (2, 576)) #задаем рандомные значения от 0 уровня к 1. На входе 10 нейронов, идут к 2
+    def __init__(self, learning_rate = 0.1, arrays = np.random.normal(0.0, 2 ** -0.5, (2, 576))):    #конструктор, learning_rate - скорость обучения стоит по умолчанию, но его можно менять
+        self.weights_0_1 = arrays #np.random.normal(0.0, 2 ** -0.5, (2, 576)) #задаем рандомные значения от 0 уровня к 1. На входе 10 нейронов, идут к 2
         self.weights_1_2 = np.random.normal(0.0, 1, (1, 2))
         self.sigmoid_mapper = np.vectorize(self.sigmoid)# позволяет пробежаться по вектору, к каждому элементу применить сигмоидную функцию и оставить результат
         self.learning_rate = np.array([learning_rate]) #список передали в метод, который сделает массив из списка
@@ -77,16 +77,26 @@ epochs = 5000
 #насколько быстро за каждую иттерацию нужно сдвигаться
 learning_rate = 0.04
 
-network = Neural(learning_rate=learning_rate)
+arrays = []
+with open('weights.txt', 'r') as f:
+    arr = []
+    for line in f:
+        if line == ';\n':
+            arrays.append(arr)
+            arr.clear()
+        else:
+            arr.append(float(line))
+    if len(arr) > 0:
+        arrays.append(arr)
 
-# f = open('weights.txt', 'w')
-# for item in network.weights_0_1:
-#     f.write("%s\n" % item)
-# f.close()
-with open('weights.txt', 'w') as f:
-    for item in network.weights_0_1:
-        f.write(str(item) + '\n')
+network = Neural(learning_rate=learning_rate, arrays=arrays)
 
+#запись весов в файл
+# with open('weights.txt', 'w') as f:
+#     for arr in network.weights_0_1:
+#         for item in arr:
+#             f.write(str(item) + "\n")
+#         f.write(";" + "\n")
 
 for i in range(epochs): # i = 0...3999
     inputs_ = []
