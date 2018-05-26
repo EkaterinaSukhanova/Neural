@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QMainWindow, QAction, QApplication, QToolTip, QFileD
     QDesktopWidget, QGridLayout, QWidget
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QImage
 from skimage.io import imread
+from Neural1 import start
 
 
 class Example(QMainWindow):
@@ -63,12 +64,11 @@ class Example(QMainWindow):
         # image = decode_image(file_name)
         image = imread(file_name, as_grey=True)
         self.show_image(image)
-
-        self.show_result("")
+        result = start(file_name)
+        self.show_result(result)
 
     def show_result(self, result: str):
-
-        pass
+        print(result)
 
     def show_image(self, image):
         image_qt = QtGui.QImage(image.data, image.shape[1], image.shape[0], QImage.Format_Grayscale8)

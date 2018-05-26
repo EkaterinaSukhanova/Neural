@@ -147,7 +147,7 @@ def start(filename: str):
 
 
 if __name__ == "__main__":
-    result = start("triangle10")
+    result = start("image_test/triangle10.png")
     print(result)
 
 
