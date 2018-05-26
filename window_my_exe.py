@@ -19,6 +19,8 @@ class Example(QWidget):
         self._grid = None
         self.initUI()
         self._network = None
+        self.flag = False
+        self.result_text = None
 
 
     def initUI(self):
@@ -29,6 +31,8 @@ class Example(QWidget):
         self._grid = QGridLayout(self)
         self._grid.setSpacing(10)
         self.setLayout(self._grid)
+
+
 
 # Мы создаем кнопку. Кнопка является экземпляром класса QPushButton.
 # Первый параметр конструктора - название кнопки. Вторым параметром является родительский виджет.
@@ -54,6 +58,7 @@ class Example(QWidget):
     def button_start_train_clicked(self):
         self._network = start_training()
 
+
     def button_open_im_clicked(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file', 'home/nyam/Документы/Neural/')[0]
         image = imread(filename, as_grey=True)
@@ -62,6 +67,11 @@ class Example(QWidget):
         if (self._network != None):
             result = start_detect(self._network, filename)
             self.show_result(result)
+        else:
+            result = 'Сlick on "Start training" \nto learn the neural network'
+            self.show_result(result)
+            self.flag = True
+
 
     def show_image(self, image):
         image_qt = QtGui.QImage(image.data, image.shape[1], image.shape[0], QImage.Format_Grayscale8)
@@ -71,9 +81,13 @@ class Example(QWidget):
         self._grid.addWidget(lbl, 1, 1, -1, -1)
 
     def show_result(self, result):
-        result_text = QLabel(result, self)
-        result_text.setFont(QtGui.QFont("Times", 30, QtGui.QFont.Bold))
-        self._grid.addWidget(result_text, 1, 2, -1, -1)
+        if (self.result_text != None):
+            self._grid.removeWidget(self.result_text)
+            self.result_text.deleteLater()
+            self.result_text = None
+        self.result_text = QLabel(result, self)
+        self.result_text.setFont(QtGui.QFont("Times", 18))
+        self._grid.addWidget(self.result_text, 1, 2, -1, -1)
 
 if __name__ == '__main__':
 
