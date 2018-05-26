@@ -84,8 +84,9 @@ def training(network: Neural, train: [], epochs: int):
             correct_predictions.append(np.array(correct_predict))
 
         train_loss = MSE(network.predict(np.array(inputs_).T), np.array(correct_predictions))
-        sys.stdout.write(
-            "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5]))
+        # sys.stdout.write(
+        #     "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5]))
+        process = "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5])
 
 
 def read_weight():
@@ -128,49 +129,41 @@ def result_in_number(network: Neural, train: []):
             str(network.predict(np.array(inputs_stat))),
             str(correct_predict == 1)))
 
+def write_weights_in_file(network: Neural):
+    with open('weights_0_1.txt', 'w') as f:
+        for arr in network.weights_0_1:
+            for item in arr:
+                f.write(str(item) + "\n")
+            f.write(";" + "\n")
+    with open('weights_1_2.txt', 'w') as f:
+        for arr in network.weights_1_2:
+            for item in arr:
+                f.write(str(item) + "\n")
+            f.write(";" + "\n")
 
-def start(filename: str):
+def start_training():
     circles = read_images("circle", 1)
     triangle = read_images("triangle", 0)
     train = get_one_list(circles, triangle)
-
     arrays_weights_0_1, arrays_weights_1_2 = read_weight()
 
-    # сколько раз прогоним кейсы
     epochs = 5000
     # насколько быстро за каждую иттерацию нужно сдвигаться
     learning_rate = 0.04
 
     network = Neural(learning_rate=learning_rate, arrays_weights_0_1=arrays_weights_0_1, arrays_weights_1_2=arrays_weights_1_2)
     training(network=network, train=train, epochs=epochs)
+    return network
+
+def start_detect(network: Neural, filename: str):
     return detect_object(network, filename)
 
 
 if __name__ == "__main__":
-    result = start("image_test/triangle10.png")
+    network = start_training()
+
+    filename = "image_test/triangle10.png"
+    result = start_detect(network, filename)
     print(result)
 
 
-#запись весов в файл
-# with open('weights_0_1.txt', 'w') as f:
-#     for arr in network.weights_0_1:
-#         for item in arr:
-#             f.write(str(item) + "\n")
-#         f.write(";" + "\n")
-#
-# with open('weights_1_2.txt', 'w') as f:
-#     for arr in network.weights_1_2:
-#         for item in arr:
-#             f.write(str(item) + "\n")
-#         f.write(";" + "\n")
-
-#результаты в числах
-# for inputs_stat, correct_predict in train:
-#     print("the prediction: {}, expected: {}".format(
-#         str(network.predict(np.array(inputs_stat)) > 0.5),
-#         str(correct_predict == 1)))
-#
-# for inputs_stat, correct_predict in train:
-#     print("the prediction: {}, expected: {}".format(
-#         str(network.predict(np.array(inputs_stat))),
-#         str(correct_predict == 1)))
