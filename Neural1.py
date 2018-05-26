@@ -79,6 +79,15 @@ learning_rate = 0.04
 
 network = Neural(learning_rate=learning_rate)
 
+# f = open('weights.txt', 'w')
+# for item in network.weights_0_1:
+#     f.write("%s\n" % item)
+# f.close()
+with open('weights.txt', 'w') as f:
+    for item in network.weights_0_1:
+        f.write(str(item) + '\n')
+
+
 for i in range(epochs): # i = 0...3999
     inputs_ = []
     correct_predictions = []
@@ -102,6 +111,7 @@ for i in range(epochs): # i = 0...3999
 #         str(network.predict(np.array(inputs_stat))),
 #         str(correct_predict == 1)))
 
+#тестируем
 test = read_one_image("triangle10")
 answer = network.predict(test)
 
