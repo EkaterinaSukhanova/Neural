@@ -60,7 +60,7 @@ class Window(QWidget):
 
     def show_MSE_progress(self) -> QLabel:
         self.string_process = QLabel("string", self)
-        self.string_process.setFont(QtGui.QFont("Times", 10))
+        self.string_process.setFont(QtGui.QFont("Times", 18))
         self._grid.addWidget(self.string_process, 1, 0)
         return self.string_process
 
@@ -70,11 +70,11 @@ class Window(QWidget):
         self.show_image(image)
 
         if (self._network != None):
-            result = start_detect(self._network, filename)
-            self.show_result(result)
+            result_str, answer_shape = start_detect(self._network, filename)
+            self.show_result(result_str, answer_shape)
         else:
-            result = 'Сlick on "Start training" \nto learn the neural network'
-            self.show_result(result)
+            result_str = 'Сlick on "Start training" \nto learn the neural network'
+            self.show_result(result_str)
 
     def show_image(self, image):
         if (self.image_on_screen != None):
@@ -102,12 +102,15 @@ class Window(QWidget):
                         big_image[index_i][index_j] = image[i][j]
         return big_image
 
-    def show_result(self, result):
+    def show_result(self, result_str, answer_shape = None):
         if (self.result_text != None):
             self._grid.removeWidget(self.result_text)
             self.result_text.deleteLater()
             self.result_text = None
-        self.result_text = QLabel(result, self)
+        if answer_shape is not None:
+            result_str += "\n"
+            result_str += str(answer_shape)
+        self.result_text = QLabel(result_str, self)
         self.result_text.setFont(QtGui.QFont("Times", 18))
         self._grid.addWidget(self.result_text, 1, 2, -1, -1)
 

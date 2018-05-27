@@ -66,10 +66,10 @@ def detect_object(network: Neural, filename: str):
 
     if answer >= 0.5:
         result_str = "Круг"
-        return result_str
+        return result_str, answer
     else:
         result_str = "Треугольник"
-        return result_str
+        return result_str, answer
 
 
 def training(network: Neural, train: [], epochs: int, label: QLabel = None, callback = None):
@@ -88,7 +88,7 @@ def training(network: Neural, train: [], epochs: int, label: QLabel = None, call
         sys.stdout.write(
             "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5]))
         MSE_progress.append(train_loss)
-        process = "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5])
+        process = "\rProgress: {} % \n Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5])
         if label is not None and callback is not None and i % 9 == 0:
             label.setText(process)
             callback()
@@ -164,14 +164,14 @@ def start_training(label: QLabel = None, callback = None):
 
 
 def start_detect(network: Neural, filename: str):
-    return detect_object(network, filename)
+    result_str, answer = detect_object(network, filename)
+    return result_str, answer
 
 
 if __name__ == "__main__":
     network, MSE_progress = start_training()
 
     filename = "image_test/triangle10.png"
-    result = start_detect(network, filename)
-    print(result)
-
-
+    result_str, answer = start_detect(network, filename)
+    print("shape: " + result_str)
+    print("answer value: " + str(answer))
