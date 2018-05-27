@@ -13,17 +13,13 @@ class Window():
         # initializes the user interface
         self.setupUi(self)
 
-        # restarts the 'QProgressBar' . перезапускает «QProgressBar»
-        self.qprogressbar.reset()
-
-        # connects the 'QPushButton.valueChanged()' signal with the 'qprogressbar_value_changed()' slot. подключает сигнал «QPushButton.valueChanged ()» с слотом «qprogressbar_value_changed ()»
+        # connects the 'QPushButton.valueChanged()' signal with the 'qprogressbar_value_changed()' slot.
+        # подключает сигнал «QPushButton.valueChanged ()» с слотом «qprogressbar_value_changed ()»
         self.qprogressbar.valueChanged.connect(self.qprogressbar_value_changed)
 
-        # connects the 'QPushButton.clicked()' signal with the 'btn_start_clicked()' slot . подключает сигнал «QPushButton.clicked ()» с слотом «btn_start_clicked ()»
+        # connects the 'QPushButton.clicked()' signal with the 'btn_start_clicked()' slot .
+        # подключает сигнал «QPushButton.clicked ()» с слотом «btn_start_clicked ()»
         self.btn_start.clicked.connect(self.btn_start_clicked)
-
-        # sets the icon of 'btn_clear'
-        self.btn_clear.setIcon(QtGui.QIcon('images_test/circle1.png'))
 
         # connects the 'QToolButton.clicked()' signal with the 'clear_output()' slot . подключает сигнал «QToolButton.clicked ()» с слотом «clear_output ()»
         self.btn_clear.clicked.connect(self.btn_clear_output)
@@ -45,16 +41,9 @@ class Window():
 
     # 'btn_start_clicked()' slot
     def btn_start_clicked(self):
-        # restarts the 'QProgressBar'
-        self.qprogressbar.reset()
-
         # starts the 'QTimer' with an interval of 40 milliseconds
         self.qtimer.start(40)
 
-    # 'btn_clear_output()' slot
-    def btn_clear_output(self):
-        # clears the content of the 'QPlainTextEdit'
-        self.edt_output.clear()
 
     # 'qprogressbar_value_changed()' slot
     def qprogressbar_value_changed(self, value):
@@ -79,15 +68,3 @@ class Window():
 
         self.edt_output.moveCursor(QtGui.QTextCursor.End)
 
-
-# creates the application
-application = QtGui.QApplication(sys.argv)
-
-# creates the window
-window = Window()
-
-# shows the window
-window.show()
-
-# runs the application
-sys.exit(application.exec_())
