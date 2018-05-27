@@ -6,7 +6,7 @@ from skimage.io import imread
 def read_one_image(name: str) -> []:
 
     read_image = imread(name, as_grey=True)
-    image_norm = read_image / 255
+    image_norm = read_image / 255,
     one_image = (np.reshape(image_norm, image_norm.shape[0] * image_norm.shape[1]))
 
     return one_image

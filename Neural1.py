@@ -2,6 +2,7 @@ import numpy as np # для работы с матрицами
 import sys # для печати на экран
 from read_all_images import read_images
 from read_image import read_one_image
+from PyQt5.QtWidgets import QLabel
 
 
 class Neural:
@@ -72,7 +73,7 @@ def detect_object(network: Neural, filename: str):
         return result_str
 
 
-def training(network: Neural, train: [], epochs: int):
+def training(network: Neural, train: [], epochs: int, label: QLabel = None):
     MSE_progress = []
     for i in range(epochs):  # i = 0...3999
         inputs_ = []
@@ -89,7 +90,10 @@ def training(network: Neural, train: [], epochs: int):
         #     "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5]))
         MSE_progress.append(train_loss)
         process = "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5])
+        if label is not None:
+            label.setText(process)
     return MSE_progress
+
 
 def read_weight():
     arrays_weights_0_1 = []
@@ -143,7 +147,8 @@ def write_weights_in_file(network: Neural):
                 f.write(str(item) + "\n")
             f.write(";" + "\n")
 
-def start_training():
+
+def start_training(label: QLabel = None):
     circles = read_images("circle", 1)
     triangle = read_images("triangle", 0)
     train = get_one_list(circles, triangle)
@@ -154,8 +159,9 @@ def start_training():
     learning_rate = 0.04
 
     network = Neural(learning_rate=learning_rate, arrays_weights_0_1=arrays_weights_0_1, arrays_weights_1_2=arrays_weights_1_2)
-    MSE_progress = training(network=network, train=train, epochs=epochs)
+    MSE_progress = training(network=network, train=train, epochs=epochs, label=label)
     return network, MSE_progress
+
 
 def start_detect(network: Neural, filename: str):
     return detect_object(network, filename)

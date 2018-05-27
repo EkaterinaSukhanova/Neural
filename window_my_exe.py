@@ -80,7 +80,10 @@ class Window(QWidget):
     def button_start_train_clicked(self):
         # self.progressBar.setRange(0, 0)
         # self.start_process_training()
-        self._network, self.MSE_progress = start_training()
+        label = self.show_MSE_progress_2()
+
+        self._network, self.MSE_progress = start_training(label)
+
 
     # def start_process_training(self):
     #     self._network, self.MSE_progress = start_training()
@@ -90,12 +93,18 @@ class Window(QWidget):
     #     self.progressBar.setRange(0, 1)
     #     self.progressBar.setValue(1)
 
+    def show_MSE_progress_2(self) -> QLabel:
+        self.string_process = QLabel("string", self)
+        self.string_process.setFont(QtGui.QFont("Times", 10))
+        self._grid.addWidget(self.string_process, 1, 1, -1, -1)
+        return self.string_process
 
-        # self.show_MSE_progress()
 
+    # # self.show_MSE_progress()
+    #
     # def show_MSE_progress(self):
     #     self.flag_start_show_process = True
-    #     while(self.flag_start_show_process == True):
+    #     while self.flag_start_show_process == True:
     #         for i in range(self.num_epochs):  # i = 0...3999
     #             QApplication.processEvents()
     #             train_loss = self.MSE_progress[i]
