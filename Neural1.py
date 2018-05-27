@@ -60,7 +60,6 @@ def get_one_list(first: [], second: []) -> []:
     return result_list
 
 
-#тестируем
 def detect_object(network: Neural, filename: str):
     input_image = read_one_image(filename)
     answer = network.predict(input_image)
@@ -86,8 +85,8 @@ def training(network: Neural, train: [], epochs: int, label: QLabel = None, call
             correct_predictions.append(np.array(correct_predict))
 
         train_loss = MSE(network.predict(np.array(inputs_).T), np.array(correct_predictions))
-        # sys.stdout.write(
-        #     "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5]))
+        sys.stdout.write(
+            "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5]))
         MSE_progress.append(train_loss)
         process = "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5])
         if label is not None and callback is not None and i % 9 == 0:
@@ -169,7 +168,7 @@ def start_detect(network: Neural, filename: str):
 
 
 if __name__ == "__main__":
-    network = start_training()
+    network, MSE_progress = start_training()
 
     filename = "image_test/triangle10.png"
     result = start_detect(network, filename)
