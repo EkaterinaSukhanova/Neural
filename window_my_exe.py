@@ -10,18 +10,21 @@ from skimage.io import imread
 from Neural1 import start_detect
 from Neural1 import start_training
 
-#
-class Example(QWidget):
+
+class Window(QWidget):
 
     def __init__(self):
         super().__init__()
 
         self._grid = None
         self.initUI()
-        self._network = None
-        self.flag = False
-        self.result_text = None
 
+        self._network = None
+        self.result_text = None
+        self.image_on_screen = None
+        self.MSE_progress = None
+        self.string_process = None
+        self.num_epochs = 4000
 
     def initUI(self):
 
@@ -31,8 +34,6 @@ class Example(QWidget):
         self._grid = QGridLayout(self)
         self._grid.setSpacing(10)
         self.setLayout(self._grid)
-
-
 
 # Мы создаем кнопку. Кнопка является экземпляром класса QPushButton.
 # Первый параметр конструктора - название кнопки. Вторым параметром является родительский виджет.
@@ -56,8 +57,22 @@ class Example(QWidget):
         self.show()
 
     def button_start_train_clicked(self):
-        self._network = start_training()
+        self._network, self.MSE_progress = start_training()
+        self.show_MSE_progress()
 
+    def show_MSE_progress(self):
+        self.flag_start_show_process = True
+        for i in range(self.num_epochs):  # i = 0...3999
+            train_loss = self.MSE_progress[i]
+            string_on_screen = "\rProgress: {}, Training loss: {}".format(str(100 * i / float(self.num_epochs))[:4], str(train_loss)[:5])
+            if (self.string_process != None):
+                self._grid.removeWidget(self.string_process)
+                self.string_process.deleteLater()
+                self.string_process = None
+            self.string_process = QLabel(string_on_screen, self)
+            self.string_process.setFont(QtGui.QFont("Times", 10))
+            self._grid.addWidget(self.string_process, 1, 1, -1, -1)
+        self.flag_start_show_process = False
 
     def button_open_im_clicked(self):
         filename = QFileDialog.getOpenFileName(self, 'Open file', 'home/nyam/Документы/Neural/')[0]
@@ -70,15 +85,17 @@ class Example(QWidget):
         else:
             result = 'Сlick on "Start training" \nto learn the neural network'
             self.show_result(result)
-            self.flag = True
-
 
     def show_image(self, image):
+        if (self.image_on_screen != None):
+            self._grid.removeWidget(self.image_on_screen)
+            self.image_on_screen.deleteLater()
+            self.image_on_screen = None
         image_qt = QtGui.QImage(image.data, image.shape[1], image.shape[0], QImage.Format_Grayscale8)
         pixmap = QPixmap(image_qt)
-        lbl = QLabel(self)
-        lbl.setPixmap(pixmap)
-        self._grid.addWidget(lbl, 1, 1, -1, -1)
+        self.image_on_screen = QLabel(self)
+        self.image_on_screen.setPixmap(pixmap)
+        self._grid.addWidget(self.image_on_screen, 1, 1, -1, -1)
 
     def show_result(self, result):
         if (self.result_text != None):
@@ -92,5 +109,5 @@ class Example(QWidget):
 if __name__ == '__main__':
 
     app = QApplication(sys.argv)
-    ex = Example()
+    ex = Window()
     sys.exit(app.exec_())

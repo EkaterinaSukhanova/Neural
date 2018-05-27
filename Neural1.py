@@ -73,6 +73,7 @@ def detect_object(network: Neural, filename: str):
 
 
 def training(network: Neural, train: [], epochs: int):
+    MSE_progress = []
     for i in range(epochs):  # i = 0...3999
         inputs_ = []
         correct_predictions = []
@@ -86,8 +87,9 @@ def training(network: Neural, train: [], epochs: int):
         train_loss = MSE(network.predict(np.array(inputs_).T), np.array(correct_predictions))
         # sys.stdout.write(
         #     "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5]))
+        MSE_progress.append(train_loss)
         process = "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5])
-
+    return MSE_progress
 
 def read_weight():
     arrays_weights_0_1 = []
@@ -152,8 +154,8 @@ def start_training():
     learning_rate = 0.04
 
     network = Neural(learning_rate=learning_rate, arrays_weights_0_1=arrays_weights_0_1, arrays_weights_1_2=arrays_weights_1_2)
-    training(network=network, train=train, epochs=epochs)
-    return network
+    MSE_progress = training(network=network, train=train, epochs=epochs)
+    return network, MSE_progress
 
 def start_detect(network: Neural, filename: str):
     return detect_object(network, filename)
