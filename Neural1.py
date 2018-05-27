@@ -73,7 +73,7 @@ def detect_object(network: Neural, filename: str):
         return result_str
 
 
-def training(network: Neural, train: [], epochs: int, label: QLabel = None):
+def training(network: Neural, train: [], epochs: int, label: QLabel = None, callback = None):
     MSE_progress = []
     for i in range(epochs):  # i = 0...3999
         inputs_ = []
@@ -90,8 +90,9 @@ def training(network: Neural, train: [], epochs: int, label: QLabel = None):
         #     "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5]))
         MSE_progress.append(train_loss)
         process = "\rProgress: {}, Training loss: {}".format(str(100 * i / float(epochs))[:4], str(train_loss)[:5])
-        if label is not None:
+        if label is not None and callback is not None and i % 9 == 0:
             label.setText(process)
+            callback()
     return MSE_progress
 
 
@@ -148,7 +149,7 @@ def write_weights_in_file(network: Neural):
             f.write(";" + "\n")
 
 
-def start_training(label: QLabel = None):
+def start_training(label: QLabel = None, callback = None):
     circles = read_images("circle", 1)
     triangle = read_images("triangle", 0)
     train = get_one_list(circles, triangle)
@@ -159,7 +160,7 @@ def start_training(label: QLabel = None):
     learning_rate = 0.04
 
     network = Neural(learning_rate=learning_rate, arrays_weights_0_1=arrays_weights_0_1, arrays_weights_1_2=arrays_weights_1_2)
-    MSE_progress = training(network=network, train=train, epochs=epochs, label=label)
+    MSE_progress = training(network=network, train=train, epochs=epochs, label=label, callback=callback)
     return network, MSE_progress
 
 

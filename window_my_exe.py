@@ -80,9 +80,10 @@ class Window(QWidget):
     def button_start_train_clicked(self):
         # self.progressBar.setRange(0, 0)
         # self.start_process_training()
+
         label = self.show_MSE_progress_2()
 
-        self._network, self.MSE_progress = start_training(label)
+        self._network, self.MSE_progress = start_training(label, QApplication.processEvents)
 
 
     # def start_process_training(self):
@@ -96,7 +97,7 @@ class Window(QWidget):
     def show_MSE_progress_2(self) -> QLabel:
         self.string_process = QLabel("string", self)
         self.string_process.setFont(QtGui.QFont("Times", 10))
-        self._grid.addWidget(self.string_process, 1, 1, -1, -1)
+        self._grid.addWidget(self.string_process, 2, 1)
         return self.string_process
 
 
